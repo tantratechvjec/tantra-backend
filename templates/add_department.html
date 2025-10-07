@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Add Department</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      body {
+        background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
+        color: #ffffff;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px 12px;
+      }
+
+      .form-container {
+        background: #1e1e1e;
+        padding: 34px 26px;
+        border-radius: 14px;
+        box-shadow: 0 0 20px #00ffff88, 0 0 40px #00ffff44 inset;
+        width: 100%;
+        max-width: 520px;
+        margin: 26px auto;
+        transition: transform 0.2s;
+      }
+
+      .form-container:hover { transform: translateY(-2px); }
+
+      h2 { color: #00ffff; text-align: center; margin-bottom: 18px; font-size: 1.7em; }
+
+      label { display:block; margin:10px 0 6px; font-weight:700; color:#00ffffaa; }
+
+      input[type="text"], input[type="file"] { width:100%; padding:12px; border-radius:8px; border:none; background:#2a2a2a; color:#fff; }
+
+      input:focus { box-shadow: 0 0 8px #00ffff; background:#1a1a1a; }
+
+      button { width:100%; padding:12px; border-radius:10px; border:none; background:#00ffff; color:#000; font-weight:700; margin-top:12px; }
+
+      .back { display:block; text-align:center; margin-top:14px; color:#00ffff; text-decoration:none; font-weight:700; }
+
+      @media (max-width: 520px) { .form-container { padding: 18px 12px; } h2 { font-size:1.4em; } }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <h2>Add Department</h2>
+      <form method="POST" enctype="multipart/form-data">
+        <label>Department Name</label>
+        <input type="text" name="name" placeholder="Department Name" required />
+
+        <label>Description</label>
+        <input type="text" name="description" placeholder="Description" />
+
+        <label>Upload Logo</label>
+        <input type="file" name="logo_file" accept="image/*" />
+
+        <label>Upload Payment QR</label>
+        <input type="file" name="qr_file" accept="image/*" />
+
+        <button type="submit">Add Department</button>
+      </form>
+      <a class="back" href="/">← Back to Admin Panel</a>
+    </div>
+  </body>
+</html>

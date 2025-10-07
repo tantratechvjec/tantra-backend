@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>View Participants</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    background: #0d0d0d;
+    color: #fff;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px 12px;
+  }
+h2 { color: #ff00ff; text-align: center; margin-bottom: 20px; }
+  .table-wrap { overflow-x: auto; }
+  select { padding: 10px; border-radius: 5px; margin-bottom: 16px; border: none; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; min-width: 720px; }
+  th, td { padding: 10px; border: 1px solid #444; text-align: center; }
+  th { background: #ff00ff; color: #000; }
+  tr:nth-child(even) { background: #1a1a1a; }
+  tr:hover { background: #ff66ff22; }
+  .back { display:block; text-align:center; margin-top:16px; color:#ff00ff; text-decoration:none; font-weight:bold; }
+  .back:hover { color:#fff; text-shadow: 0 0 5px #ff00ff; }
+  .no-data { text-align:center; margin-top: 20px; color:#ff66ff; font-weight:bold; }
+  @media (max-width: 520px) {
+    table { min-width: 640px; }
+    th, td { padding: 8px; font-size: 13px; }
+  }
+  @media (max-width: 380px) { table { min-width: 560px; } }
+  
+</style>
+</head>
+<body>
+
+<h2>View Registered Participants</h2>
+
+<form method="GET">
+  <label>Select Department:</label>
+  <select name="dept_id" id="deptSelect" onchange="this.form.submit()">
+    <option value="">--Select Department--</option>
+    {% for id, name in departments %}
+      <option value="{{ id }}" {% if selected_dept_id == id %}selected{% endif %}>{{ name }}</option>
+    {% endfor %}
+  </select>
+</form>
+
+{% if events_for_select %}
+<form method="GET" id="eventFilterForm">
+  <input type="hidden" name="dept_id" value="{{ selected_dept_id }}" />
+  <label>Select Event:</label>
+  <select name="event_id" onchange="document.getElementById('eventFilterForm').submit()">
+    <option value="">--All Events--</option>
+    {% for eid, ename in events_for_select %}
+      <option value="{{ eid }}" {% if selected_event_id == eid %}selected{% endif %}>{{ ename }}</option>
+    {% endfor %}
+  </select>
+</form>
+
+<div style="display:flex; gap:12px; margin-top:12px;">
+  <a class="back" href="/view_participants?dept_id={{ selected_dept_id }}&event_id={{ selected_event_id }}" style="background:#444;padding:8px 12px;border-radius:6px;color:#fff;text-decoration:none;">Refresh</a>
+  <a class="back" href="/export_participants?dept_id={{ selected_dept_id }}&event_id={{ selected_event_id }}&format=xlsx" style="background:#28a745;padding:8px 12px;border-radius:6px;color:#fff;text-decoration:none;">Download XLSX</a>
+  <a class="back" href="/export_participants?dept_id={{ selected_dept_id }}&event_id={{ selected_event_id }}&format=pdf" style="background:#6f42c1;padding:8px 12px;border-radius:6px;color:#fff;text-decoration:none;">Download PDF</a>
+</div>
+{% endif %}
+
+{% if participants %}
+<div class="table-wrap">
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Phone</th>
+    <th>College</th>
+    <th>Branch</th>
+    <th>Year</th>
+    <th>Event</th>
+    <th>Transaction ID</th>
+  </tr>
+  {% for p in participants %}
+  <tr>
+    <td>{{ p['name'] }}</td>
+    <td>{{ p['email'] }}</td>
+    <td>{{ p['phone'] }}</td>
+    <td>{{ p['college'] }}</td>
+    <td>{{ p['branch'] }}</td>
+    <td>{{ p['year'] }}</td>
+    <td>{{ p['event_name'] }}</td>
+    <td>{{ p['transaction_id'] }}</td>
+  </tr>
+  {% endfor %}
+  </table>
+</div>
+{% else %}
+<p class="no-data">No participants registered for this department.</p>
+{% endif %}
+
+<a class="back" href="/">← Back to Admin Panel</a>
+</body>
+</html>

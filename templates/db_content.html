@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Fest Database Content</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* A little custom touch for better readability */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-indigo-600">Tech Fest Content</h1>
+            <p class="text-lg text-gray-600 mt-2">A live view of all departments and events from the database.</p>
+        </header>
+
+        <!-- 
+          This is the main Jinja2 loop.
+          It iterates through the 'data' list passed from your Flask app.
+          If 'data' is empty, the 'else' block will be displayed.
+        -->
+        <main class="space-y-8">
+            {% for dept in data %}
+            <section class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                <!-- Department Header -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-6">
+                    <img src="{{ dept.logo_url or 'https://placehold.co/100x100/E2E8F0/A0AEC0?text=Logo' }}" alt="{{ dept.dept_name }} Logo" class="w-24 h-24 rounded-full border-4 border-indigo-200 object-cover flex-shrink-0">
+                    <div class="flex-grow">
+                        <h2 class="text-3xl font-bold text-gray-900">{{ dept.dept_name }}</h2>
+                        <p class="text-gray-600 mt-1">{{ dept.description }}</p>
+                    </div>
+                     {% if dept.qr_url %}
+                    <div class="text-center flex-shrink-0">
+                       <img src="{{ dept.qr_url }}" alt="Department QR" class="w-24 h-24 rounded-lg border">
+                       <p class="text-xs text-gray-500 mt-1">Department QR</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Events Section -->
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 border-b pb-2 mb-4">Events</h3>
+                    
+                    <!-- 
+                      This is the nested loop for events within a department.
+                      It checks if the 'events' list exists and is not empty.
+                    -->
+                    {% if dept.events %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% for event in dept.events %}
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 flex flex-col justify-between hover:border-indigo-400 transition-colors">
+                           <div>
+                                {% if event.image_url %}
+                                <img src="{{ event.image_url or 'https://placehold.co/400x200/E2E8F0/A0AEC0?text=Event' }}" alt="{{ event.name }} Image" class="w-full h-40 object-cover rounded-md mb-4">
+                                {% endif %}
+                                <h4 class="text-xl font-bold text-indigo-700">{{ event.name }}</h4>
+                                <p class="text-gray-600 text-sm mt-2 mb-4">{{ event.description }}</p>
+                           </div>
+                           <div class="text-sm space-y-2 text-gray-700 border-t pt-3">
+                                <p class="flex items-center gap-2">
+                                    <!-- Calendar Icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>
+                                    <strong>Date:</strong> {{ event.date }}
+                                </p>
+                                <p class="flex items-center gap-2">
+                                    <!-- Clock Icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>
+                                    <strong>Time:</strong> {{ event.time }}
+                                </p>
+                                <p class="flex items-center gap-2">
+                                    <!-- Location Icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>
+                                    <strong>Venue:</strong> {{ event.venue }}
+                                </p>
+                           </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                        <p class="text-gray-500 italic">No events scheduled for this department yet.</p>
+                    {% endif %}
+                </div>
+            </section>
+            {% else %}
+            <!-- This message shows if the 'data' list from Flask is empty -->
+            <div class="text-center bg-white p-10 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold text-gray-700">No Data Found</h2>
+                <p class="text-gray-500 mt-2">The database appears to be empty. Please add a department to get started.</p>
+            </div>
+            {% endfor %}
+        </main>
+    </div>
+
+</body>
+</html>
