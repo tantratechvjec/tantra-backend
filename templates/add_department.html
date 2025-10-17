@@ -3,64 +3,57 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Add Department</title>
-    <style>
-      *, *::before, *::after { box-sizing: border-box; }
-      body {
-        background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
-        color: #ffffff;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0;
-        padding: 20px 12px;
-      }
-
-      .form-container {
-        background: #1e1e1e;
-        padding: 34px 26px;
-        border-radius: 14px;
-        box-shadow: 0 0 20px #00ffff88, 0 0 40px #00ffff44 inset;
-        width: 100%;
-        max-width: 520px;
-        margin: 26px auto;
-        transition: transform 0.2s;
-      }
-
-      .form-container:hover { transform: translateY(-2px); }
-
-      h2 { color: #00ffff; text-align: center; margin-bottom: 18px; font-size: 1.7em; }
-
-      label { display:block; margin:10px 0 6px; font-weight:700; color:#00ffffaa; }
-
-      input[type="text"], input[type="file"] { width:100%; padding:12px; border-radius:8px; border:none; background:#2a2a2a; color:#fff; }
-
-      input:focus { box-shadow: 0 0 8px #00ffff; background:#1a1a1a; }
-
-      button { width:100%; padding:12px; border-radius:10px; border:none; background:#00ffff; color:#000; font-weight:700; margin-top:12px; }
-
-      .back { display:block; text-align:center; margin-top:14px; color:#00ffff; text-decoration:none; font-weight:700; }
-
-      @media (max-width: 520px) { .form-container { padding: 18px 12px; } h2 { font-size:1.4em; } }
-    </style>
+    <title>Add Department - Premium Admin</title>
+    <link rel="stylesheet" href="/static/css/admin.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   </head>
   <body>
-    <div class="form-container">
-      <h2>Add Department</h2>
-      <form method="POST" enctype="multipart/form-data">
-        <label>Department Name</label>
-        <input type="text" name="name" placeholder="Department Name" required />
+    <div class="container floating">
+      <div class="header">
+        <div class="brand">
+          <div class="logo pulse"><i class="fas fa-building"></i></div>
+          <div>
+            <h1>Add Department</h1>
+            <div class="small">Create a new department with custom branding</div>
+          </div>
+        </div>
+        <div class="controls">
+          <a href="/index" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        </div>
+      </div>
 
-        <label>Description</label>
-        <input type="text" name="description" placeholder="Description" />
+      <div class="card" style="max-width:700px;margin:0 auto;">
+        <form method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <label><i class="fas fa-tag"></i> Department Name</label>
+            <input type="text" name="name" placeholder="Enter department name" required />
+          </div>
 
-        <label>Upload Logo</label>
-        <input type="file" name="logo_file" accept="image/*" />
+          <div class="form-group">
+            <label><i class="fas fa-align-left"></i> Description</label>
+            <input type="text" name="description" placeholder="Brief description of the department" />
+          </div>
 
-        <label>Upload Payment QR</label>
-        <input type="file" name="qr_file" accept="image/*" />
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fas fa-image"></i> Upload Logo</label>
+              <input type="file" name="logo_file" accept="image/*" />
+            </div>
 
-        <button type="submit">Add Department</button>
-      </form>
-      <a class="back" href="/">← Back to Admin Panel</a>
+            <div class="form-group">
+              <label><i class="fas fa-qrcode"></i> Upload Payment QR</label>
+              <input type="file" name="qr_file" accept="image/*" />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <a href="/index" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add Department</button>
+          </div>
+        </form>
+        
+        <a href="/index" class="back-link"><i class="fas fa-arrow-left"></i> Back to Admin Panel</a>
+      </div>
     </div>
   </body>
 </html>

@@ -1,0 +1,125 @@
+# Database Design Explanation for Tantra Admin Panel (db.txt)
+
+## 1. Overview
+This document explains the logical data model for the Tantra Techfest system, based on the current data.json and codebase. It covers the main entities, their fields, and how they are related (primary keys, foreign keys, etc.), to guide the design of a scalable admin panel and database (SQL or NoSQL).
+
+---
+
+## 2. Main Entities & Relationships
+
+### 2.1. Department
+- **Table/Collection:** departments
+- **Primary Key:** id (string, e.g., 'applied-electronics-instrumentation')
+- **Fields:**
+  - id: unique department identifier (PK)
+  - name: department name
+  - description: department description
+  - icon: icon class
+  - color: color code
+  - logo: logo filename
+  - qr_code: payment QR code URL
+
+### 2.2. Event
+- **Table/Collection:** events
+- **Primary Key:** id (integer, e.g., 1)
+- **Foreign Key:** department (references departments.id)
+- **Fields:**
+  - id: unique event identifier (PK)
+  - name: event name
+  - description: event description
+  - date: event date
+  - time: event time
+  - venue: event venue
+  - department: department id (FK)
+  - coordinator: coordinator name
+  - coordinatorPhone: coordinator phone
+  - price: registration fee
+  - participants: max participants
+  - duration: event duration
+  - category: event type (technical, workshop, design, etc.)
+  - prize: prize amount
+  - image: event image URL
+  - status: registration status (1=open, 0=closed)
+
+### 2.3. User (Participant)
+- **Table/Collection:** users (not in data.json, but required for admin panel)
+- **Primary Key:** id (string/UUID or email)
+- **Fields:**
+  - id: unique user identifier (PK)
+  - name: participant name
+  - email: participant email (unique)
+  - phone: participant phone
+  - college: college name
+  - year: year/branch
+  - password_hash: (if using local auth)
+  - is_admin: boolean (admin privilege)
+
+### 2.4. Registration
+- **Table/Collection:** registrations
+- **Primary Key:** id (string/UUID)
+- **Foreign Keys:**
+  - user_id (references users.id)
+  - event_id (references events.id)
+- **Fields:**
+  - id: unique registration id (PK)
+  - user_id: participant id (FK)
+  - event_id: event id (FK)
+  - payment_status: paid/unpaid
+  - registered_at: timestamp
+  - team_name: (optional, for team events)
+  - team_members: (optional, array of user_ids or names)
+
+### 2.5. Admin
+- **Table/Collection:** admins (or use is_admin in users)
+- **Primary Key:** id (string/UUID)
+- **Fields:**
+  - id: admin user id (PK)
+  - privileges: (optional, e.g., superadmin, department-admin)
+
+---
+
+## 3. Entity-Relationship (ER) Summary
+- **departments** (1) --- (M) **events**
+- **events** (1) --- (M) **registrations** (M) --- (1) **users**
+- **users** (1) --- (M) **registrations**
+- **admins**: subset of users (or separate collection)
+
+---
+
+## 4. Firestore/NoSQL Notes
+- In Firestore, collections can be nested or flat. Recommended:
+  - /departments/{deptId}
+  - /events/{eventId} (with department field as reference or id)
+  - /users/{userId}
+  - /registrations/{registrationId} (with user_id and event_id fields)
+- For team events, store team info in registrations or a separate teams collection.
+
+---
+
+## 5. Admin Panel Design Implications
+- **Departments:** CRUD, view events by department.
+- **Events:** CRUD, filter by department/category/status.
+- **Users:** Search, view registrations, manage roles.
+- **Registrations:** View by event/user, payment status, export lists.
+- **Admins:** Manage privileges, audit logs (optional).
+
+---
+
+## 6. Example Table Schema (SQL)
+
+### departments
+| id (PK) | name | ... |
+
+### events
+| id (PK) | name | department (FK) | ... |
+
+### users
+| id (PK) | name | email | ... |
+
+### registrations
+| id (PK) | user_id (FK) | event_id (FK) | ... |
+
+---
+
+## 7. Summary
+This structure supports a robust admin panel for event, user, and registration management, and can be implemented in SQL (with PK/FK) or Firestore (with references/ids). Extend as needed for teams, payments, or analytics.

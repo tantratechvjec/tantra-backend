@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Participants List - {{ selected_event or 'All Events' }}</title>
+    <link rel="stylesheet" href="/static/css/admin.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      .btn i {
+        margin-right: 6px;
+      }
+      @media (max-width: 1024px) {
+        .header {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 20px;
+        }
+        .header > div:last-child {
+          margin-left: 0;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .search-form {
+          width: 100% !important;
+          min-width: 100% !important;
+          order: -1;
+        }
+        .select-wrapper {
+          flex: 1;
+        }
+        .btn {
+          min-width: 120px;
+        }
+      }
+      @media (max-width: 768px) {
+        .container {
+          padding: 16px;
+        }
+        .card {
+          padding: 16px;
+        }
+        .table-wrap {
+          margin: 0 -16px;
+          padding: 0 16px;
+          overflow-x: auto;
+        }
+        .data-table {
+          min-width: 800px;
+        }
+        .header > div:last-child {
+          flex-direction: column;
+        }
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+        .search-form {
+          flex-direction: column;
+          gap: 8px;
+        }
+        .search-form button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Handle dropdown toggle
+        const dropdown = document.querySelector('.dropdown');
+        if (dropdown) {
+          const menu = dropdown.querySelector('.dropdown-menu');
+          dropdown.addEventListener('click', function(e) {
+            if (e.target.closest('.dropdown-item')) return; // Don't toggle if clicking menu item
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+          });
+
+          // Close dropdown when clicking outside
+          document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target)) {
+              menu.style.display = 'none';
+            }
+          });
+        }
+      });
+    </script>
+    <div class="container floating">
+      <div class="header">
+        <div class="brand">
+          <div class="logo pulse">T</div>
+          <div>
+            <h1>Participants</h1>
+            <div class="small">{{ selected_event or 'All Events' }}</div>
+          </div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <div style="display:flex;gap:12px;align-items:center;width:100%;flex-wrap:wrap;">
+            <form method="get" action="{{ url_for('participants_list') }}" class="search-form" style="min-width:300px;flex:1;">
+              {% if dept_id %}
+                <input type="hidden" name="dept_id" value="{{ dept_id }}" />
+              {% endif %}
+              <div class="select-wrapper" style="width:100%;">
+                <br>
+                <select name="event" class="form-control">
+                  <option value="">All Events</option>
+                  {% for ev in events_for_select %}
+                    <option value="{{ ev }}" {% if ev==selected_event %}selected{% endif %}>{{ ev }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <button class="btn btn-primary" type="submit" style="margin-top:8px;">
+                <i class="fas fa-search"></i>
+                Filter
+              </button>
+            </form>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              {% if selected_event %}
+                <a href="{{ url_for('download_participants', event=selected_event, dept_id=dept_id, format='xlsx') }}" class="btn btn-ghost" style="flex:1;min-width:120px;">
+                  <i class="fas fa-file-excel"></i> Export XLSX
+                </a>
+                <a href="{{ url_for('download_participants', event=selected_event, dept_id=dept_id, format='pdf') }}" class="btn btn-ghost" style="flex:1;min-width:120px;">
+                  <i class="fas fa-file-pdf"></i> Export PDF
+                </a>
+              {% elif dept_id %}
+                <!-- Export all events for the selected department -->
+                <a href="{{ url_for('download_participants', dept_id=dept_id, format='xlsx') }}" class="btn btn-ghost" style="flex:1;min-width:120px;">
+                  <i class="fas fa-file-excel"></i> Export XLSX
+                </a>
+                <a href="{{ url_for('download_participants', dept_id=dept_id, format='pdf') }}" class="btn btn-ghost" style="flex:1;min-width:120px;">
+                  <i class="fas fa-file-pdf"></i> Export PDF
+                </a>
+              {% else %}
+                <!-- No department or event selected: prevent global export -->
+                <a href="#" onclick="alert('Please select a department or an event to export the participants list.');return false;" class="btn btn-ghost" style="flex:1;min-width:120px;">
+                  <i class="fas fa-file-excel"></i> Export XLSX
+                </a>
+                <a href="#" onclick="alert('Please select a department or an event to export the participants list.');return false;" class="btn btn-ghost" style="flex:1;min-width:120px;">
+                  <i class="fas fa-file-pdf"></i> Export PDF
+                </a>
+              {% endif %}
+              <a href="{{ url_for('participants_list', dept_id=dept_id) }}" class="btn btn-ghost" style="flex:1;min-width:120px;">
+                <i class="fas fa-sync-alt"></i>
+                Reset
+              </a>
+              <a href="/department" class="btn btn-ghost" style="flex:1;min-width:120px;">
+                <i class="fas fa-arrow-left"></i>
+                Dashboard
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-header">
+          <h2 style="margin:0;display:flex;align-items:center;gap:10px">
+            <i class="fas fa-users"></i>
+            Registered Participants
+          </h2>
+          <div class="actions" style="margin-left:auto">
+            <span class="total">Total: {{ participants|length }}</span>
+          </div>
+        </div>
+        
+        <div class="table-wrap">
+          <table id="participantsTable" class="data-table">
+            <thead>
+              <tr>
+                <th><i class="fas fa-user"></i> Name</th>
+                <th><i class="fas fa-calendar-alt"></i> Event</th>
+                <th><i class="fas fa-university"></i> College</th>
+                <th><i class="fas fa-code-branch"></i> Branch</th>
+                <th><i class="fas fa-graduation-cap"></i> Year</th>
+                <th><i class="fas fa-envelope"></i> Email</th>
+                <th><i class="fas fa-phone"></i> Phone</th>
+                <th><i class="fas fa-receipt"></i> Transaction ID</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for p in participants %}
+              <tr>
+                <td>{{ p.name }}</td>
+                <td><span class="badge">{{ p.event }}</span></td>
+                <td>{{ p.college }}</td>
+                <td>{{ p.branch }}</td>
+                <td>{{ p.year }}</td>
+                <td>{{ p.email }}</td>
+                <td>{{ p.phone }}</td>
+                <td>{{ p.transaction_id or p.transactionId or '' }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

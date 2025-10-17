@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Update Auth - Tantra Admin</title>
+    <link rel="stylesheet" href="/static/css/admin.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      .page-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .auth-header {
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .search-box {
+        position: relative;
+        margin: 16px 0;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 12px 16px 12px 40px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: inherit;
+        font-size: 16px; /* Increased for better mobile readability */
+      }
+
+      .search-box i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      @media (max-width: 768px) {
+        .search-box {
+          margin: 8px 0;
+        }
+
+        .search-box input {
+          padding: 14px 16px 14px 40px; /* Slightly larger touch target */
+        }
+
+        .page-content {
+          padding: 0;
+        }
+
+        .card {
+          margin: 0 !important;
+          border-radius: 0;
+          box-shadow: none;
+        }
+
+        .header {
+          padding: 16px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+        }
+
+        .header .controls {
+          width: 100%;
+          justify-content: flex-start;
+        }
+
+        .header .brand {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+
+        .header h1 {
+          font-size: 24px;
+        }
+      }
+
+      /* Make inputs more touch-friendly on mobile */
+      @media (max-width: 768px) {
+        .auth-table input[type="text"],
+        .auth-table input[type="password"] {
+          padding: 12px;
+          font-size: 16px; /* Prevent iOS zoom on focus */
+        }
+
+        .btn {
+          padding: 12px 16px;
+          font-size: 16px;
+        }
+      }
+
+      .auth-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 20px 0;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .auth-table th,
+      .auth-table td {
+        padding: 16px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        vertical-align: middle;
+      }
+
+      .auth-table th {
+        background: rgba(255, 255, 255, 0.08);
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .auth-table tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .auth-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      /* Mobile-first styles */
+      @media (max-width: 768px) {
+        .auth-table {
+          border-radius: 0;
+          box-shadow: none;
+        }
+
+        .auth-table thead {
+          display: none; /* Hide table headers on mobile */
+        }
+
+        .auth-table tr {
+          display: block;
+          margin-bottom: 16px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.02);
+        }
+
+        .auth-table td {
+          display: block;
+          text-align: left;
+          padding: 12px;
+        }
+
+        .auth-table td::before {
+          content: attr(data-label);
+          float: left;
+          font-weight: bold;
+          text-transform: uppercase;
+          font-size: 12px;
+          margin-bottom: 4px;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .auth-table td:last-child {
+          border-bottom: none;
+          padding-top: 16px;
+        }
+
+        .auth-table .btn {
+          width: 100%;
+          margin-top: 8px;
+        }
+
+        .container.floating {
+          padding: 12px;
+          margin: 0;
+          border-radius: 0;
+        }
+      }
+
+      .auth-table input[type="text"],
+      .auth-table input[type="password"] {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px 14px;
+        border-radius: 6px;
+        color: inherit;
+        font-size: inherit;
+        width: 100%;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .auth-table input[type="text"]:focus,
+      .auth-table input[type="password"]:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--accent);
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.2);
+      }
+
+      .auth-table .department-id {
+        display: inline-block;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 14px;
+      }
+
+      .auth-table .role-info {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 13px;
+        margin-top: 4px;
+      }
+
+      .save-row {
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        transform: translateX(10px);
+      }
+
+      .row-changed .save-row {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .status-message {
+        padding: 16px;
+        border-radius: 10px;
+        margin: 16px 0;
+        display: none;
+        animation: slideDown 0.3s ease;
+      }
+
+      .status-message.success {
+        background: rgba(46, 204, 113, 0.15);
+        color: #2ecc71;
+        border: 1px solid rgba(46, 204, 113, 0.2);
+      }
+
+      .status-message.error {
+        background: rgba(231, 76, 60, 0.15);
+        color: #e74c3c;
+        border: 1px solid rgba(231, 76, 60, 0.2);
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .auth-table {
+          display: block;
+          overflow-x: auto;
+        }
+        
+        .auth-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+        }
+        
+        .controls {
+          width: 100%;
+          display: flex;
+          justify-content: flex-end;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container floating">
+      <div class="header">
+        <div class="brand">
+          <div class="logo pulse">T</div>
+          <div>
+            <h1>Update Authentication</h1>
+            <div class="small">Manage department credentials</div>
+          </div>
+        </div>
+        <div class="controls">
+          <a href="/index" class="btn btn-ghost"><i class="fas fa-home"></i> Back to Dashboard</a>
+        </div>
+      </div>
+
+      <div id="statusMessage" class="status-message"></div>
+
+      <div class="card" style="margin-top:20px">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Search by department or username...">
+        </div>
+
+        <table class="auth-table">
+          <thead>
+            <tr>
+              <th style="width: 25%">Department</th>
+              <th style="width: 25%">Username</th>
+              <th style="width: 25%">Password</th>
+              <th style="width: 25%">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for auth in auth_list %}
+            <tr data-dept-id="{{ auth.department_id }}" data-role="{{ auth.role }}">
+              <td data-label="Department">
+                <span class="department-id">{{ auth.department_id }}</span>
+                <div class="role-info">{{ auth.role }}</div>
+              </td>
+              <td data-label="Username">
+                <div class="input-group">
+                  <input type="text" class="username-input" value="{{ auth.username }}" data-original="{{ auth.username }}" placeholder="Enter username">
+                </div>
+              </td>
+              <td data-label="Password">
+                <div class="input-group">
+                  <input type="password" class="password-input" value="{{ auth.password }}" data-original="{{ auth.password }}" placeholder="Enter password">
+                </div>
+              </td>
+              <td data-label="Actions">
+                <button class="btn btn-ghost save-row">
+                  <i class="fas fa-save"></i> Save Changes
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      // Search functionality
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+          document.querySelectorAll('.auth-table tbody tr').forEach(row => {
+            const deptId = (row.dataset.deptId || '').toLowerCase();
+            const username = row.querySelector('.username-input').value.toLowerCase();
+            const role = (row.dataset.role || '').toLowerCase();
+            
+            if (deptId.includes(searchTerm) || username.includes(searchTerm) || role.includes(searchTerm)) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          });
+        });
+      }
+
+      // Track changes in inputs
+      document.querySelectorAll('.username-input, .password-input').forEach(input => {
+        input.addEventListener('input', function() {
+          const row = this.closest('tr');
+          const usernameInput = row.querySelector('.username-input');
+          const passwordInput = row.querySelector('.password-input');
+          
+          const usernameChanged = usernameInput.value !== usernameInput.dataset.original;
+          const passwordChanged = passwordInput.value !== passwordInput.dataset.original;
+          
+          if (usernameChanged || passwordChanged) {
+            row.classList.add('row-changed');
+          } else {
+            row.classList.remove('row-changed');
+          }
+        });
+      });
+
+      // Handle save button clicks
+      document.querySelectorAll('.save-row').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          const row = this.closest('tr');
+          const deptId = row.dataset.deptId;
+          const username = row.querySelector('.username-input').value;
+          const password = row.querySelector('.password-input').value;
+          
+          // Basic validation
+          if (!username.trim()) {
+            showStatus('Username cannot be empty', 'error');
+            return;
+          }
+          if (!password.trim()) {
+            showStatus('Password cannot be empty', 'error');
+            return;
+          }
+
+          try {
+            const response = await fetch('/update_auth', {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                department_id: deptId,
+                username: username,
+                password: password
+              })
+            });
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+              throw new Error(data.error || 'Failed to update credentials');
+            }
+
+            // Update original values
+            row.querySelector('.username-input').dataset.original = username;
+            row.querySelector('.password-input').dataset.original = password;
+            row.classList.remove('row-changed');
+            
+            showStatus('Credentials updated successfully!', 'success');
+          } catch (err) {
+            showStatus(err.message || 'Failed to update credentials', 'error');
+          }
+        });
+      });
+
+      function showStatus(message, type) {
+        const statusEl = document.getElementById('statusMessage');
+        statusEl.textContent = message;
+        statusEl.className = 'status-message ' + type;
+        statusEl.style.display = 'block';
+        
+        // Hide after 5 seconds
+        setTimeout(() => {
+          statusEl.style.display = 'none';
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>

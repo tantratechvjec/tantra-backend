@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fix Events - Premium Admin</title>
+  <link rel="stylesheet" href="/static/css/admin.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container floating">
+    <div class="header">
+      <div class="brand">
+        <div class="logo pulse"><i class="fas fa-tools"></i></div>
+        <div>
+          <h1>Fix Events</h1>
+          <div class="small">Assign missing departments to events</div>
+        </div>
+      </div>
+      <div class="controls">
+        <a href="/" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Dashboard</a>
+      </div>
+    </div>
+
+    <div class="card">
+      {% if message %}
+        <div class="success-message"><i class="fas fa-check-circle"></i> {{ message }}</div>
+      {% endif %}
+      
+      {% if events %}
+        <p class="small">The following events have missing or unknown departments. Please assign the correct department below.</p>
+        
+        <div class="dept-card-grid">
+          {% for ev in events %}
+            <div class="dept-card">
+              <div class="dept-logo">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+              <div style="flex: 1;">
+                <strong>{{ ev.name }}</strong>
+                <div class="tr-muted">{{ ev.date }}</div>
+              </div>
+              <form method="POST" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <input type="hidden" name="event_id" value="{{ ev.id }}" />
+                <select name="dept_id" required style="min-width: 160px;">
+                  <option value="">Select Department</option>
+                  {% for did, dname in departments %}
+                    <option value="{{ did }}">{{ dname }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary" style="padding: 10px 14px;"><i class="fas fa-link"></i> Assign</button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="no-data">
+          <i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 16px; color: var(--success);"></i>
+          <p>No problematic events found — all events have valid departments.</p>
+        </div>
+      {% endif %}
+      
+      <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Back to Admin Panel</a>
+    </div>
+  </div>
+</body>
+</html>

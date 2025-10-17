@@ -1,0 +1,12 @@
+department_id,username,password,role
+admin,admin,admin,admin
+ai-data-science,ai-data-science,ai-data-science,department
+applied-electronics-instrumentation,applied-electronics-instrumentation,applied-electronics-instrumentation,department
+civil-engineering,civil-engineering,civil-engineering,department
+computer-science-design,computer-science-design,computer-science-design,department
+computer-science-engineering,computer-science-engineering,computer-science-engineering,department
+cse-business-systems,cse-business-systems,cse-business-systems,department
+cse-cyber-security,cse-cyber-security,cse-cyber-security,department
+electrical-electronics,electrical-electronics,electrical-electronics,department
+electronics-communication,electronics-communication,electronics-communication,department
+mechanical-engineering,mechanical-engineering,mechanical-engineering,department

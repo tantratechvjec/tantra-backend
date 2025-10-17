@@ -3,87 +3,178 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Add Event</title>
+    <title>Add Event - Premium Admin</title>
+    <link rel="stylesheet" href="/static/css/admin.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-      /* predictable sizing */
-      *, *::before, *::after { box-sizing: border-box; }
-      body {
-        background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
-        color: #ffffff;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0;
-        padding: 20px 12px;
+      /* inline toast/alert styles */
+      #alertBox {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        min-width: 260px;
+        max-width: 90%;
+        padding: 12px 16px;
+        border-radius: 6px;
+        color: #fff;
+        display: none;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+        font-weight: 600;
       }
-
-      .form-container {
-        background: #1e1e1e;
-        padding: 32px 22px;
-        border-radius: 14px;
-        box-shadow: 0 0 18px #ff660088, 0 0 40px #ff660044 inset;
-        width: 100%;
-        max-width: 560px;
-        margin: 28px auto;
-        transition: transform 0.2s;
-      }
-
-      .form-container:hover { transform: translateY(-2px); }
-
-      h2 {
-        color: #ff6600;
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 1.8em;
-        letter-spacing: 0.5px;
-      }
-
-      input, select, label { width: 100%; display: block; font-size: 15px; margin: 10px 0; }
-
-      input[type="text"], input[type="file"], select, input[type="date"], input[type="time"] {
-        padding: 12px; border-radius: 8px; border: none; outline: none; background: #2a2a2a; color: #fff;
-      }
-
-      input:focus, select:focus { box-shadow: 0 0 8px #ff6600; background: #1a1a1a; }
-
-      label { margin-bottom: 6px; color: #ff6600aa; font-weight: 700; }
-
-      button {
-        width: 100%; padding: 12px; border-radius: 10px; border: none; background: #ff6600; color: #000; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 12px;
-      }
-
-      button:hover { background: #ff9933; transform: translateY(-2px); }
-
-      .back { display:block; text-align:center; margin-top:16px; color:#ff6600; text-decoration:none; font-weight:700; }
-
-      @media (max-width: 520px) {
-        .form-container { padding: 20px 16px; }
-        h2 { font-size: 1.4em; }
-      }
+      #alertBox.success { background: #2f9e44; }
+      #alertBox.error { background: #e03131; }
     </style>
   </head>
   <body>
-    <div class="form-container">
-      <h2>Add Event</h2>
-      <form method="POST" enctype="multipart/form-data">
-        <label>Select Department</label>
-        <select name="dept_id" required>
-          <option value="">Select Department</option>
-          {% for id, name in departments %}
-          <option value="{{ id }}">{{ name }}</option>
-          {% endfor %}
-        </select>
+    <div class="container floating">
+      <div class="header">
+        <div class="brand">
+          <div class="logo pulse"><i class="fas fa-calendar-plus"></i></div>
+          <div>
+            <h1>Add Event</h1>
+            <div class="small">Create an amazing event experience</div>
+          </div>
+        </div>
+        <div class="controls">
+          <a href="/index" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        </div>
+      </div>
 
-        <input type="text" name="name" placeholder="Event Name" required />
-        <input type="text" name="description" placeholder="Description" />
-        <input type="date" name="date" required />
-        <input type="time" name="time" required />
-        <input type="text" name="venue" placeholder="Venue" />
+      <div class="card" style="max-width:800px;margin:0 auto;">
+  <form id="addEventForm" method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <label><i class="fas fa-building"></i> Select Department</label>
+            <select name="dept_id" required>
+              <option value="">Select Department</option>
+              {% for id, name in departments %}
+              <option value="{{ id }}">{{ name }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-        <label>Upload Event Image</label>
-        <input type="file" name="event_image" accept="image/*" />
+          <div class="form-group">
+            <label><i class="fas fa-heading"></i> Event Name</label>
+            <input type="text" name="name" placeholder="Enter event name" required />
+          </div>
 
-        <button type="submit">Add Event</button>
-      </form>
-      <a class="back" href="/">← Back to Admin Panel</a>
+          <div class="form-group">
+            <label><i class="fas fa-align-left"></i> Description</label>
+            <textarea name="description" placeholder="Describe your event..."></textarea>
+          </div>
+
+          <div class="form-row">
+  <div class="form-group">
+    <label><i class="fas fa-user-tie"></i> Coordinator</label>
+    <input type="text" name="coordinator" placeholder="Coordinator name" />
+  </div>
+
+  <div class="form-group">
+    <label><i class="fas fa-phone"></i> Coordinator Phone</label>
+    <input type="text" name="coordinatorPhone" placeholder="Coordinator phone" />
+  </div>
+</div>
+
+
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fas fa-users"></i> Category</label>
+              <select name="category">
+                <option value="Individual">Individual</option>
+                <option value="Group">Group</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-calendar-day"></i> Date</label>
+              <input type="date" name="date" value="{{ default_date }}" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fas fa-clock"></i> Time</label>
+              <input type="time" name="time" />
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-map-marker-alt"></i> Venue</label>
+              <input type="text" name="venue" placeholder="Event venue location" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fas fa-tag"></i> Price (optional)</label>
+              <input type="text" name="price" placeholder="e.g. 100" />
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-trophy"></i> Prize (optional)</label>
+              <input type="text" name="prize" placeholder="e.g. 5000" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fas fa-toggle-on"></i> Registration Status</label>
+            <select name="status">
+              <option value="1">Open for Registration</option>
+              <option value="0">Closed</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label><i class="fas fa-image"></i> Upload Event Image</label>
+            <input type="file" name="event_image" accept="image/*" />
+          </div>
+
+          <div class="form-actions">
+            <a href="/index" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add Event</button>
+          </div>
+    </form>
+  <div id="alertBox" role="alert" aria-live="polite"></div>
+        
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Back to Admin Panel</a>
+      </div>
     </div>
-  </body>
-</html>
+      <script>
+        (function(){
+          const form = document.getElementById('addEventForm');
+          const alertBox = document.getElementById('alertBox');
+          function showAlert(message, type='success', timeout=3500){
+            alertBox.textContent = message;
+            alertBox.className = '';
+            alertBox.classList.add(type);
+            alertBox.style.display = 'block';
+            window.clearTimeout(alertBox._hidetimer);
+            alertBox._hidetimer = window.setTimeout(()=>{ alertBox.style.display = 'none'; }, timeout);
+          }
+
+          if(!form) return;
+
+          form.addEventListener('submit', function(e){
+            e.preventDefault();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if(submitBtn) submitBtn.disabled = true;
+            const url = form.action || window.location.href;
+            const fd = new FormData(form);
+
+            fetch(url, { method: 'POST', body: fd, credentials: 'same-origin' })
+              .then(response => {
+                if(response.ok) return response.text().then(t => ({ ok: true, text: t }));
+                return response.text().then(t => ({ ok: false, text: t }));
+              })
+              .then(result => {
+                if(result.ok){
+                  showAlert('Event registered successfully — staying on this page.', 'success');
+                  try{ form.reset(); }catch(_){ }
+                } else {
+                  showAlert('Failed to register event. Please try again.', 'error');
+                  console.error('Add event failed:', result.text);
+                }
+              })
+              .catch(err => { console.error('Add event error:', err); showAlert('Network error. Please try again.', 'error'); })
+              .finally(()=>{ if(submitBtn) submitBtn.disabled = false; });
+          });
+        })();
+      </script>
+    </body>
+  </html>

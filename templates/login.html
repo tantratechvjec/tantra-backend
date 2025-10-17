@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/css/admin.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      body {
+        background: #181c2f;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .login-card {
+        background: #23263a;
+        border-radius: 24px;
+        box-shadow: 0 8px 32px rgba(44, 20, 80, 0.25);
+        padding: 48px 36px 40px 36px;
+        max-width: 400px;
+        width: 100%;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+      .login-title {
+        font-size: 2.4rem;
+        font-weight: 800;
+        margin-bottom: 0;
+        letter-spacing: -1px;
+      }
+      .login-subtitle {
+        color: #b3b8d0;
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin-top: 4px;
+      }
+      .login-logo {
+        font-size: 1.6rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #a18fff, #6f4cff);
+        color: #fff;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+      }
+      .form-label {
+        font-weight: 700;
+        color: #b3b8d0;
+        margin-bottom: 6px;
+        font-size: 1.05rem;
+        letter-spacing: 0.2px;
+      }
+      .form-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+        margin-bottom: 8px;
+      }
+      .form-input {
+        width: 100%;
+        background: #2a2d3d;
+        border: none;
+        color: #fff;
+        font-size: 1rem;
+        padding: 14px;
+        border-radius: 12px;
+      }
+      .form-input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+      .form-input:focus {
+        outline: none;
+      }
+      .form-input:focus {
+        box-shadow: none !important;
+        border: none !important;
+        outline: none !important;
+        background: transparent;
+        color: #fff;
+      }
+      .input-group:focus-within {
+        border-color: #35395a !important;
+        box-shadow: none !important;
+      }
+      .login-btn {
+        background: linear-gradient(90deg, #a18fff 0%, #6f4cff 100%);
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 16px;
+        padding: 16px 0;
+        margin-top: 10px;
+        box-shadow: 0 4px 16px rgba(111,76,255,0.18);
+        cursor: pointer;
+        transition: background 0.2s;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .login-btn:hover {
+        background: linear-gradient(90deg, #6f4cff 0%, #a18fff 100%);
+      }
+      .error {
+        background: #ff2b55;
+        color: #fff;
+        border-radius: 8px;
+        padding: 10px 16px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-card">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div>
+          <div class="login-title">Tantra Login</div>
+          <div class="login-subtitle">Admin / Department Access</div>
+        </div>
+      </div>
+      {% if error %}
+        <div class="error"><i class="fas fa-exclamation-triangle"></i> {{ error }}</div>
+      {% endif %}
+      <form method="post" action="{{ url_for('login') }}">
+        <div style="display:flex;flex-direction:column;gap:24px;">
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label class="form-label" for="username">Username</label>
+            <input type="text" name="username" id="username" class="form-input" required autofocus placeholder="Enter username">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label class="form-label" for="password">Password</label>
+            <input type="password" name="password" id="password" class="form-input" required placeholder="Enter password">
+          </div>
+        </div>
+        <button type="submit" class="login-btn" style="margin-top:24px;"><i class="fas fa-sign-in-alt"></i> Sign in</button>
+      </form>
+    </div>
+  </body>
+</html>

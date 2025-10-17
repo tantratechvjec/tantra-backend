@@ -3,98 +3,206 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>View Participants</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; }
-  body {
-    background: #0d0d0d;
-    color: #fff;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    padding: 20px 12px;
-  }
-h2 { color: #ff00ff; text-align: center; margin-bottom: 20px; }
-  .table-wrap { overflow-x: auto; }
-  select { padding: 10px; border-radius: 5px; margin-bottom: 16px; border: none; }
-  table { width: 100%; border-collapse: collapse; margin-top: 12px; min-width: 720px; }
-  th, td { padding: 10px; border: 1px solid #444; text-align: center; }
-  th { background: #ff00ff; color: #000; }
-  tr:nth-child(even) { background: #1a1a1a; }
-  tr:hover { background: #ff66ff22; }
-  .back { display:block; text-align:center; margin-top:16px; color:#ff00ff; text-decoration:none; font-weight:bold; }
-  .back:hover { color:#fff; text-shadow: 0 0 5px #ff00ff; }
-  .no-data { text-align:center; margin-top: 20px; color:#ff66ff; font-weight:bold; }
-  @media (max-width: 520px) {
-    table { min-width: 640px; }
-    th, td { padding: 8px; font-size: 13px; }
-  }
-  @media (max-width: 380px) { table { min-width: 560px; } }
-  
-</style>
+<title>View Participants - Premium Admin</title>
+<link rel="stylesheet" href="/static/css/admin.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+  <div class="container floating">
+    <div class="header">
+      <div class="brand">
+        <div class="logo pulse"><i class="fas fa-users"></i></div>
+        <div>
+          <h1>Tantra Admin</h1>
+          <div class="small">Manage registered participants</div>
+        </div>
+      </div>
+      <div class="controls">
+        <a href="/index" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        <a href="/add_event" class="btn btn-primary"><i class="fas fa-plus"></i> Add Event</a>
+      </div>
+    </div>
 
-<h2>View Registered Participants</h2>
+    <div class="card">
+      <form method="GET" class="form-row">
+        <div class="form-group">
+          <label><i class="fas fa-filter"></i> Select Department:</label>
+          <select name="dept_id" id="deptSelect" onchange="this.form.submit()">
+            <option value="">-- Select Department --</option>
+            {% for id, name in departments %}
+              <option value="{{ id }}" {% if selected_dept_id == id %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </form>
 
-<form method="GET">
-  <label>Select Department:</label>
-  <select name="dept_id" id="deptSelect" onchange="this.form.submit()">
-    <option value="">--Select Department--</option>
-    {% for id, name in departments %}
-      <option value="{{ id }}" {% if selected_dept_id == id %}selected{% endif %}>{{ name }}</option>
-    {% endfor %}
-  </select>
-</form>
+      <div class="toolbar">
+        <div class="left">
+          <div class="form-group" style="min-width: 300px; margin: 0;">
+            <input class="search" id="participantSearch" placeholder="Search name, email, college..." />
+          </div>
+          {% if participants %}
+            <button class="copy-btn" id="copyBtn"><i class="fas fa-copy"></i> Copy Data</button>
+          {% endif %}
+        </div>
+      </div>
 
-{% if events_for_select %}
-<form method="GET" id="eventFilterForm">
-  <input type="hidden" name="dept_id" value="{{ selected_dept_id }}" />
-  <label>Select Event:</label>
-  <select name="event_id" onchange="document.getElementById('eventFilterForm').submit()">
-    <option value="">--All Events--</option>
-    {% for eid, ename in events_for_select %}
-      <option value="{{ eid }}" {% if selected_event_id == eid %}selected{% endif %}>{{ ename }}</option>
-    {% endfor %}
-  </select>
-</form>
+      {% if events_for_select %}
+      <form method="GET" id="eventFilterForm" class="form-row">
+        <input type="hidden" name="dept_id" value="{{ selected_dept_id }}" />
+        <div class="form-group">
+          <label><i class="fas fa-calendar-alt"></i> Select Event (optional):</label>
+          <select name="event_id" onchange="document.getElementById('eventFilterForm').submit()">
+            <option value="">-- All Events --</option>
+            {% for eid, ename in events_for_select %}
+              <option value="{{ ename }}" {% if selected_event_id == ename %}selected{% endif %}>{{ ename }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group" style="display: flex; align-items: flex-end;">
+          <label style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" name="sort_event" value="1" {% if request.args.get('sort_event') == '1' %}checked{% endif %} />
+            <span>Sort by event</span>
+          </label>
+        </div>
+      </form>
 
-<div style="display:flex; gap:12px; margin-top:12px;">
-  <a class="back" href="/view_participants?dept_id={{ selected_dept_id }}&event_id={{ selected_event_id }}" style="background:#444;padding:8px 12px;border-radius:6px;color:#fff;text-decoration:none;">Refresh</a>
-  <a class="back" href="/export_participants?dept_id={{ selected_dept_id }}&event_id={{ selected_event_id }}&format=xlsx" style="background:#28a745;padding:8px 12px;border-radius:6px;color:#fff;text-decoration:none;">Download XLSX</a>
-  <a class="back" href="/export_participants?dept_id={{ selected_dept_id }}&event_id={{ selected_event_id }}&format=pdf" style="background:#6f42c1;padding:8px 12px;border-radius:6px;color:#fff;text-decoration:none;">Download PDF</a>
-</div>
-{% endif %}
+      <div class="toolbar">
+        <div class="left">
+          <a href="/view_participants?dept_id={{ selected_dept_id }}&event_id={{ selected_event_id }}" class="btn btn-ghost"><i class="fas fa-sync-alt"></i> Refresh</a>
+          <a href="/export_participants?dept_id={{ selected_dept_id }}&event_id={{ selected_event_id }}&format=xlsx" class="btn btn-success"><i class="fas fa-file-excel"></i> Download XLSX</a>
+          <a href="/export_participants?dept_id={{ selected_dept_id }}&event_id={{ selected_event_id }}&format=pdf" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Download PDF</a>
+        </div>
+      </div>
+      {% endif %}
 
-{% if participants %}
-<div class="table-wrap">
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Email</th>
-    <th>Phone</th>
-    <th>College</th>
-    <th>Branch</th>
-    <th>Year</th>
-    <th>Event</th>
-    <th>Transaction ID</th>
-  </tr>
-  {% for p in participants %}
-  <tr>
-    <td>{{ p['name'] }}</td>
-    <td>{{ p['email'] }}</td>
-    <td>{{ p['phone'] }}</td>
-    <td>{{ p['college'] }}</td>
-    <td>{{ p['branch'] }}</td>
-    <td>{{ p['year'] }}</td>
-    <td>{{ p['event_name'] }}</td>
-    <td>{{ p['transaction_id'] }}</td>
-  </tr>
-  {% endfor %}
-  </table>
-</div>
-{% else %}
-<p class="no-data">No participants registered for this department.</p>
-{% endif %}
+      {% if participants %}
+      <div class="table-wrap">
+        <table id="participantsTable">
+          <thead>
+            <tr>
+              <th><i class="fas fa-user"></i> Name</th>
+              <th><i class="fas fa-envelope"></i> Email</th>
+              <th><i class="fas fa-phone"></i> Phone</th>
+              <th><i class="fas fa-university"></i> College</th>
+              <th><i class="fas fa-code-branch"></i> Branch</th>
+              <th><i class="fas fa-graduation-cap"></i> Year</th>
+              <th><i class="fas fa-calendar-check"></i> Event</th>
+              <th><i class="fas fa-receipt"></i> Transaction ID</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for p in participants %}
+          <tr>
+            <td data-label="Name">{{ (p['name'] if p['name'] and p['name']|string != 'None' else '-') }}</td>
+            <td data-label="Email">{{ (p['email'] if p['email'] and p['email']|string != 'None' else '-') }}</td>
+            <td data-label="Phone">{{ (p['phone'] if p['phone'] and p['phone']|string != 'None' else '-') }}</td>
+            <td data-label="College">{{ (p['college'] if p['college'] and p['college']|string != 'None' else '-') }}</td>
+            <td data-label="Branch">{{ (p['branch'] if p['branch'] and p['branch']|string != 'None' else '-') }}</td>
+            <td data-label="Year">{{ (p['year'] if p['year'] and p['year']|string != 'None' else '-') }}</td>
+            <td data-label="Event"><span class="badge">{{ (p['event_name'] if p['event_name'] and p['event_name']|string != 'None' else '-') }}</span></td>
+            <td data-label="Transaction ID"><code>{{ (p['transaction_id'] if p['transaction_id'] and p['transaction_id']|string != 'None' else '-') }}</code></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="no-data">
+        <i class="fas fa-users-slash" style="font-size: 48px; margin-bottom: 16px; color: var(--muted);"></i>
+        <p>No participants registered for this department.</p>
+      </div>
+      {% endif %}
 
-<a class="back" href="/">← Back to Admin Panel</a>
+      <a href="/index" class="back-link"><i class="fas fa-arrow-left"></i> Back to Admin Panel</a>
+    </div>
+  </div>
+
+  <script>
+    // Enhanced client-side filtering
+    const search = document.getElementById('participantSearch');
+    if (search) {
+      search.addEventListener('input', function(){
+        const q = this.value.toLowerCase();
+        let visibleCount = 0;
+        
+        document.querySelectorAll('#participantsTable tbody tr').forEach(tr => {
+          const text = tr.innerText.toLowerCase();
+          const isVisible = text.includes(q);
+          tr.style.display = isVisible ? '' : 'none';
+          if (isVisible) visibleCount++;
+        });
+        
+        // Update results count in search placeholder
+        if (q.length > 0) {
+          search.setAttribute('data-results', `${visibleCount} results`);
+        } else {
+          search.removeAttribute('data-results');
+        }
+      });
+    }
+    
+    // Enhanced copy button with feedback
+    const copyBtn = document.getElementById('copyBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        
+        // Add loading state
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Copying...';
+        this.disabled = true;
+        
+        let txt = '';
+        const headers = Array.from(document.querySelectorAll('#participantsTable thead th'))
+          .map(th => th.innerText.replace(/[^a-zA-Z0-9 ]/g, ''))
+          .join('\t');
+        txt += headers + '\n';
+        
+        document.querySelectorAll('#participantsTable tbody tr').forEach(tr => { 
+          if (tr.style.display !== 'none') {
+            txt += Array.from(tr.cells).map(td => td.innerText).join('\t') + '\n'; 
+          }
+        });
+        
+        navigator.clipboard.writeText(txt).then(() => { 
+          this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+          setTimeout(() => {
+            this.innerHTML = originalText;
+            this.disabled = false;
+          }, 2000);
+        }).catch(() => { 
+          this.innerHTML = '<i class="fas fa-times"></i> Failed';
+          setTimeout(() => {
+            this.innerHTML = originalText;
+            this.disabled = false;
+          }, 2000);
+        });
+      });
+    }
+  </script>
+  <script>
+    // Hide any stray fixed-position element anchored to bottom-left (unwanted download button)
+    (function(){
+      try {
+        const els = Array.from(document.querySelectorAll('body *'));
+        els.forEach(el => {
+          const style = window.getComputedStyle(el);
+          if (style.position === 'fixed') {
+            const r = el.getBoundingClientRect();
+            // check if it's near bottom-left corner (within 120px of left and 120px of bottom)
+            if (r.left >= 0 && r.left <= 140 && (window.innerHeight - (r.top + r.height)) >= -10 && (window.innerHeight - (r.top + r.height)) <= 140) {
+              // hide it
+              el.style.display = 'none';
+              el.setAttribute('data-hidden-by', 'admin-cleanup');
+            }
+          }
+        });
+      } catch(e) {
+        // noop
+        console.warn('cleanup script failed', e);
+      }
+    })();
+  </script>
 </body>
 </html>
